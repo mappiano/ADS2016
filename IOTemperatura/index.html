@@ -1,0 +1,84 @@
+<!--
+    Autor: Mario Fabrizio Appiano
+-->
+<!DOCTYPE html>
+<html lang="en" ng-app="iotemperatura">
+<head>
+    <meta charset="UTF-8">
+    <title>IOTemperatura</title>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+    <!-- llamo al socket -->
+    <script type="text/javascript" src="socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+        
+    </script>
+</head>
+<body>
+
+    <!-- Creo el div donde tendré la gráfica. Le digo que ocupe todo el ancho de la pantalla y 400px de alto -->
+    <div ng-controller="temperatura" id="chart" style="width:100%; height:400px;"></div>
+    <!-- Comienza el Javascript -->
+    <script>
+        var app = angular.module('iotemperatura',[]);        
+        var socket = io();
+        var chart;
+
+        app.controller('temperatura',['$scope',function($scope){
+            // Creo un nuevo objeto 'Chart'
+            chart = new Highcharts.Chart('chart', {
+            chart: {
+                renderTo: 'chart', 
+                defaultSeriesType: 'spline',
+                events: {
+                    load: function() {
+                        // Cada vez que reciba un valor desde el socket, lo meto en la gráfica
+                        socket.on('lectura',function(lectura,valor){
+                            $scope.$apply(function(){
+                                $scope.dato = lectura;
+                                $scope.tiempo = valor;
+                                var series = chart.series[0];
+                                series.addPoint([valor, lectura]);
+                                });
+                            });
+                    }
+                }
+            },
+            rangeSelector : {
+                selected : 100
+            },
+            title: {
+                text: 'Temperatura Ambiente (Cada 5 Segundos)'
+            },
+            xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150,
+                maxZoom: 20 * 1000
+            },
+            yAxis: {
+                minPadding: 0.2,
+                maxPadding: 0.2,
+                title: {
+                    text: 'Temperatura ºC',
+                    margin: 80
+                }
+            },
+            series: [{
+                name: 'Temperatura',
+                data: []
+            }]
+        });
+      }])
+    </script>        
+</body>   
+</html>
+
+
+
+
+
+            
+                
+                    
+            
+      
