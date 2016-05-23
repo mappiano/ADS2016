@@ -8,6 +8,8 @@
     <title>IOTemperatura</title>
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+    <script src="http://code.highcharts.com/modules/exporting.js"></script>
+      <script src="https://code.highcharts.com/stock/highcharts-more.js"></script>
     <!-- llamo al socket -->
     <script type="text/javascript" src="socket.io/socket.io.js"></script>
     <script type="text/javascript">
@@ -17,16 +19,234 @@
 <body>
 
     <!-- Creo el div donde tendré la gráfica. Le digo que ocupe todo el ancho de la pantalla y 400px de alto -->
-    <div ng-controller="temperatura" id="chart" style="width:100%; height:400px;"></div>
-    <!-- Comienza el Javascript -->
+    <div ng-controller="temperatura" >
+
+    <form novalidate class="simple-form">
+        Limite Máximo: <input type="number" ng-model="sizeMax" name="size" integer />{{size}}<br />
+        Limite Mínimo: <input type="number" ng-model="sizeMin" name="size" integer />{{size}}<br />
+        <input type="button" ng-click="logId()" value="Aceptar" />    
+    </form>
+    <div id="chart" style="width:100%; height:400px;"></div>
+    </div>
+  </form>
     <script>
         var app = angular.module('iotemperatura',[]);        
         var socket = io();
-        var chart;
+        var chart;       
 
         app.controller('temperatura',['$scope',function($scope){
+        
+        Highcharts.createElement('link', {
+                                              href: 'https://fonts.googleapis.com/css?family=Unica+One',
+                                               rel: 'stylesheet',
+                                              type: 'text/css'
+        }, null, document.getElementsByTagName('head')[0]);
+
+        Highcharts.theme = {
+           colors: ["#2b908f", "#90ee7e", "#f45b5b", "#7798BF", "#aaeeee", "#ff0066", "#eeaaee",
+              "#55BF3B", "#DF5353", "#7798BF", "#aaeeee"],
+           chart: {
+              backgroundColor: {
+                 linearGradient: { x1: 0, y1: 0, x2: 1, y2: 1 },
+                 stops: [
+                    [0, '#2a2a2b'],
+                    [1, '#3e3e40']
+                 ]
+              },
+              style: {
+                 fontFamily: "'Unica One', sans-serif"
+              },
+              plotBorderColor: '#606063'
+           },
+           title: {
+              style: {
+                 color: '#E0E0E3',
+                 textTransform: 'uppercase',
+                 fontSize: '20px'
+              }
+           },
+           subtitle: {
+              style: {
+                 color: '#E0E0E3',
+                 textTransform: 'uppercase'
+              }
+           },
+           xAxis: {
+              gridLineColor: '#707073',
+              labels: {
+                 style: {
+                    color: '#E0E0E3'
+                 }
+              },
+              lineColor: '#707073',
+              minorGridLineColor: '#505053',
+              tickColor: '#707073',
+              title: {
+                 style: {
+                    color: '#A0A0A3'
+
+                 }
+              }
+           },
+           yAxis: {
+              gridLineColor: '#707073',
+              labels: {
+                 style: {
+                    color: '#E0E0E3'
+                 }
+              },
+              lineColor: '#707073',
+              minorGridLineColor: '#505053',
+              tickColor: '#707073',
+              tickWidth: 1,
+              title: {
+                 style: {
+                    color: '#A0A0A3'
+                 }
+              }
+           },
+           tooltip: {
+              backgroundColor: 'rgba(0, 0, 0, 0.85)',
+              style: {
+                 color: '#F0F0F0'
+              }
+           },
+           plotOptions: {
+              series: {
+                 dataLabels: {
+                    color: '#B0B0B3'
+                 },
+                 marker: {
+                    lineColor: '#333'
+                 }
+              },
+              boxplot: {
+                 fillColor: '#505053'
+              },
+              candlestick: {
+                 lineColor: 'white'
+              },
+              errorbar: {
+                 color: 'white'
+              }
+           },
+           legend: {
+              itemStyle: {
+                 color: '#E0E0E3'
+              },
+              itemHoverStyle: {
+                 color: '#FFF'
+              },
+              itemHiddenStyle: {
+                 color: '#606063'
+              }
+           },
+           credits: {
+              style: {
+                 color: '#666'
+              }
+           },
+           labels: {
+              style: {
+                 color: '#707073'
+              }
+           },
+
+           drilldown: {
+              activeAxisLabelStyle: {
+                 color: '#F0F0F3'
+              },
+              activeDataLabelStyle: {
+                 color: '#F0F0F3'
+              }
+           },
+
+           navigation: {
+              buttonOptions: {
+                 symbolStroke: '#DDDDDD',
+                 theme: {
+                    fill: '#505053'
+                 }
+              }
+           },
+
+           // scroll charts
+           rangeSelector: {
+              buttonTheme: {
+                 fill: '#505053',
+                 stroke: '#000000',
+                 style: {
+                    color: '#CCC'
+                 },
+                 states: {
+                    hover: {
+                       fill: '#707073',
+                       stroke: '#000000',
+                       style: {
+                          color: 'white'
+                       }
+                    },
+                    select: {
+                       fill: '#000003',
+                       stroke: '#000000',
+                       style: {
+                          color: 'white'
+                       }
+                    }
+                 }
+              },
+              inputBoxBorderColor: '#505053',
+              inputStyle: {
+                 backgroundColor: '#333',
+                 color: 'silver'
+              },
+              labelStyle: {
+                 color: 'silver'
+              }
+           },
+
+           navigator: {
+              handles: {
+                 backgroundColor: '#666',
+                 borderColor: '#AAA'
+              },
+              outlineColor: '#CCC',
+              maskFill: 'rgba(255,255,255,0.1)',
+              series: {
+                 color: '#7798BF',
+                 lineColor: '#A6C7ED'
+              },
+              xAxis: {
+                 gridLineColor: '#505053'
+              }
+           },
+
+           scrollbar: {
+              barBackgroundColor: '#808083',
+              barBorderColor: '#808083',
+              buttonArrowColor: '#CCC',
+              buttonBackgroundColor: '#606063',
+              buttonBorderColor: '#606063',
+              rifleColor: '#FFF',
+              trackBackgroundColor: '#404043',
+              trackBorderColor: '#404043'
+           },
+
+           // special colors for some of the
+           legendBackgroundColor: 'rgba(0, 0, 0, 0.5)',
+           background2: '#505053',
+           dataLabelsColor: '#B0B0B3',
+           textColor: '#C0C0C0',
+           contrastTextColor: '#F0F0F3',
+           maskColor: 'rgba(255,255,255,0.3)'
+        };
+
+        // Aplicación de la temática al gráfico.
+
+        Highcharts.setOptions(Highcharts.theme);
+
             // Creo un nuevo objeto 'Chart'
-            chart = new Highcharts.Chart('chart', {
+            chart = new Highcharts.Chart('chart', {              
             chart: {
                 renderTo: 'chart', 
                 defaultSeriesType: 'spline',
@@ -36,19 +256,72 @@
                         socket.on('lectura',function(lectura,valor){
                             $scope.$apply(function(){
                                 $scope.dato = lectura;
+                                var lectura2 = lectura+(Math.random()*5)+1;
+                                var lectura3 = lectura+(Math.random()*5)+9;
                                 $scope.tiempo = valor;
+                                var pLine = chart.yAxis[0];
                                 var series = chart.series[0];
                                 series.addPoint([valor, lectura]);
+                                var series2 = chart.series[1];
+                                series2.addPoint([valor, lectura2]);
+                                var series3 = chart.series[2];
+                                series3.addPoint([valor, lectura3]);
+                                var plotlineMax = chart.yAxis[0].plotLinesAndBands[1];          // Obtiene el limite maximo
+                                var plotlineMin = chart.yAxis[0].plotLinesAndBands[0];          // Obtiene el limite minimo
+                                
+                                if (lectura >= plotlineMax.options.value || lectura <= plotlineMin.options.value ||
+                                    lectura2 >= plotlineMax.options.value || lectura2 <= plotlineMin.options.value ||
+                                    lectura3 >= plotlineMax.options.value || lectura3 <= plotlineMin.options.value)
+                                        socket.emit('flags', '1');                              // temperatura supera max o min, envia un 1 al serial
+                                else 
+                                        socket.emit('flags', '0');                              // temperatura no supera max o min, envia un 0 al serial
+
                                 });
-                            });
+                            $scope.logId = function() {                                         // Evento de escucha del boton                                  
+                                var pLine = chart.yAxis[0];                                     // Cambia los limites
+                                pLine.removePlotLine('minimo');                                 
+                                pLine.removePlotLine('maximo');
+                                pLine.addPlotLine({
+                                      value: $scope.sizeMin,
+                                      id: 'minimo',
+                                      color: 'green',
+                                      dashStyle: 'shortdash',
+                                      width: 2,
+                                      label: {
+                                                text: 'Límite Mínimo'
+                                      }
+                                });
+                                pLine.addPlotLine({
+                                      value: $scope.sizeMax,
+                                      color: 'red',
+                                      id: 'maximo',
+                                      dashStyle: 'shortdash',
+                                      width: 2,
+                                      label: {
+                                                text: 'Límite Máximo'
+                                      }
+                                });
+                            } 
+                        });
+                        
                     }
                 }
             },
-            rangeSelector : {
-                selected : 100
-            },
-            title: {
-                text: 'Temperatura Ambiente (Cada 5 Segundos)'
+            exporting: {
+            buttons: {
+                customButton: {
+                    text: 'Custom Button',
+                    onclick: function () {
+                        socket.emit('flags', '1');
+                    }
+                },
+               anotherButton: {
+                    text: 'Another Button',
+                    onclick: function () {
+                        socket.emit('flags', '0');
+                    }
+                }
+            }
             },
             xAxis: {
                 type: 'datetime',
@@ -61,24 +334,48 @@
                 title: {
                     text: 'Temperatura ºC',
                     margin: 80
-                }
+                },
+                // ************************************************
+                // Definir los limites
+                
+                plotLines: [{
+                    // Defino el minimo
+                    value: 17, // debe cambiar dinamicamente
+                    color: 'green',
+                    id: 'minimo',
+                    dashStyle: 'shortdash',
+                    width: 2,
+                    label: {
+                        text: 'Límite Mínimo'
+                    }
+                }, {
+                    // defino el maximo
+                    value: 21, // debe cambiar dinamicamente
+                    color: 'red',
+                    id: 'maximo',
+                    dashStyle: 'shortdash',
+                    width: 2,
+                    label: {
+                        text: 'Límite Máximo'
+                    }
+                }]
+                // ************************************************/
             },
             series: [{
                 name: 'Temperatura',
                 data: []
-            }]
+            },
+            {
+                name: 'Torno',
+                data: []
+            },
+            {
+                name: 'Cilindro',
+                data: []
+            }
+            ]
         });
       }])
-    </script>        
+    </script>       
 </body>   
 </html>
-
-
-
-
-
-            
-                
-                    
-            
-      
